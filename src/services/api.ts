@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { AuthResponse, LoginCredentials, RegisterCredentials, Product, Category, Cart } from '../types';
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
@@ -18,9 +18,9 @@ api.interceptors.request.use((config) => {
 
 export const auth = {
   login: (credentials: LoginCredentials) => 
-    api.post<AuthResponse>('/auth/login', credentials),
+    api.post<AuthResponse>('/api/users/login', credentials),
   register: (credentials: RegisterCredentials) => 
-    api.post<AuthResponse>('/auth/register', credentials),
+    api.post<AuthResponse>('/api/users/register', credentials),
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

@@ -13,6 +13,9 @@ export interface Product {
   categoryId: string;
   imageUrl: string;
   stock: number;
+  brand: string;
+  rating: number;
+  subcategory: string;
 }
 
 export interface Category {

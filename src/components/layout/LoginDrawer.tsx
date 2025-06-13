@@ -46,7 +46,7 @@ const LoginDrawer = ({ open, onClose }: LoginDrawerProps) => {
         <div className="flex-1 overflow-y-auto p-8 pt-12 flex flex-col gap-6">
           {!showSignup ? (
             <>
-              <LoginForm />
+              <LoginForm onClose={onClose} />
               <div className="border-t pt-6 mt-2">
                 <div className="font-bold text-lg mb-2">Henüz Üye Değil Misiniz?</div>
                 <div className="mb-4 text-sm text-gray-600">Kolayca üye olabilirsiniz!</div>
@@ -71,7 +71,7 @@ const LoginDrawer = ({ open, onClose }: LoginDrawerProps) => {
               </div>
             </>
           ) : (
-            <SignupForm onBack={() => setShowSignup(false)} />
+            <SignupForm onBack={() => setShowSignup(false)} onSignupSuccess={() => setShowSignup(false)} />
           )}
         </div>
       </aside>

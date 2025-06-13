@@ -1,33 +1,37 @@
 import React, { useState } from 'react';
-import { useAtom } from 'jotai';
-import { userAtom } from '../../store';
 import i18next from 'i18next';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 
-export const LoginForm = () => {
-  const [, setUser] = useAtom(userAtom);
+interface LoginFormProps {
+  onClose?: () => void;
+}
+
+export const LoginForm = ({ onClose }: LoginFormProps) => {
+  const { login, isLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+    setSuccess(null);
     try {
-      // Mock login logic
-      if (email === 'user@example.com' && password === 'password') {
-        const user = { id: '1', name: 'User', email, role: 'user' as const };
-        setUser(user);
-        localStorage.setItem('user', JSON.stringify(user));
-      } else {
-        setError(i18next.t('login.invalidCredentials'));
+      await login(email, password);
+      setSuccess(i18next.t('login.success'));
+      if (onClose) {
+        onClose();
       }
-    } catch (err) {
-      setError(i18next.t('login.error'));
-    } finally {
-      setLoading(false);
+      navigate('/');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.response?.data?.message || i18next.t('login.error'));
     }
   };
 
@@ -45,15 +49,26 @@ export const LoginForm = () => {
           placeholder="E-mail adresiniz"
         />
       </div>
-      <div className="mb-4">
+      <div className="mb-4 relative">
         <input
-          type="password"
-          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-orange-500"
+          type={showPassword ? 'text' : 'password'}
+          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-orange-500 pr-10"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
           placeholder="Şifreniz"
         />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+        >
+          {showPassword ? (
+            <EyeSlashIcon className="h-5 w-5" />
+          ) : (
+            <EyeIcon className="h-5 w-5" />
+          )}
+        </button>
       </div>
       <div className="flex items-center justify-between mb-6">
         <label className="flex items-center gap-2 text-gray-700">
@@ -63,11 +78,12 @@ export const LoginForm = () => {
         <a href="#" className="text-sm text-gray-700 hover:underline">Şifremi Unuttum</a>
       </div>
       {error && <div className="mb-4 text-red-600">{error}</div>}
+      {success && <div className="mb-4 text-green-600">{success}</div>}
       <div className="mb-2 text-gray-700 font-medium text-center">Hesabınıza giriş yapmak için bilgilerinizi girin.</div>
       <button
         type="submit"
         className="w-full bg-blue-600 text-white py-3 rounded font-bold text-lg hover:bg-gray-700 transition disabled:opacity-50"
-        disabled={loading}
+        disabled={isLoading}
       >
         Giriş Yap
       </button>

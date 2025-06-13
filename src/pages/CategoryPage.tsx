@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { GiSettingsKnobs } from 'react-icons/gi';
+import { Link } from 'react-router-dom';
+import mockProducts from '../data/allMockProducts';
 
 interface Product {
   id: string;
@@ -12,193 +14,11 @@ interface Product {
   subcategory: string;
 }
 
-const mockProducts: Record<string, Product[]> = {
-  'kamp-ekipmanlari': [
-    {
-      id: '1',
-      name: 'Coleman Çadır 4 Kişilik',
-      price: 2499.99,
-      imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=500',
-      brand: 'Coleman',
-      rating: 4.5,
-      subcategory: 'Çadır'
-    },
-    {
-      id: '2',
-      name: 'Quechua Uyku Tulumu',
-      price: 899.99,
-      imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=500',
-      brand: 'Quechua',
-      rating: 4.2,
-      subcategory: 'Uyku Tulumu'
-    },
-    {
-      id: '3',
-      name: 'Naturehike Mat',
-      price: 299.99,
-      imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=500',
-      brand: 'Naturehike',
-      rating: 4.0,
-      subcategory: 'Mat'
-    }
-  ],
-  'outdoor-giyim': [
-    {
-      id: '4',
-      name: 'The North Face Mont',
-      price: 3499.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'The North Face',
-      rating: 4.8,
-      subcategory: 'Mont'
-    },
-    {
-      id: '5',
-      name: 'Columbia Polar',
-      price: 1299.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Columbia',
-      rating: 4.3,
-      subcategory: 'Polar'
-    }
-  ],
-  'ayakkabi-bot': [
-    {
-      id: '6',
-      name: 'Salomon Trekking Botu',
-      price: 1899.99,
-      imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
-      brand: 'Salomon',
-      rating: 4.7,
-      subcategory: 'Trekking Botu'
-    },
-    {
-      id: '7',
-      name: 'Merrell Sandalet',
-      price: 799.99,
-      imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
-      brand: 'Merrell',
-      rating: 4.4,
-      subcategory: 'Sandalet'
-    },
-    {
-      id: '8',
-      name: 'La Sportiva Kışlık Bot',
-      price: 2799.99,
-      imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
-      brand: 'La Sportiva',
-      rating: 4.6,
-      subcategory: 'Kışlık Botlar'
-    }
-  ],
-  'outdoor-canta': [
-    {
-      id: '9',
-      name: 'Osprey Sırt Çantası 65L',
-      price: 3499.99,
-      imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
-      brand: 'Osprey',
-      rating: 4.9,
-      subcategory: 'Sırt Çantası'
-    },
-    {
-      id: '10',
-      name: 'Deuter Bel Çantası',
-      price: 599.99,
-      imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
-      brand: 'Deuter',
-      rating: 4.3,
-      subcategory: 'Bel Çantası'
-    }
-  ],
-  'caki-bicak': [
-    {
-      id: '11',
-      name: 'Victorinox Çakı',
-      price: 899.99,
-      imageUrl: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=500',
-      brand: 'Victorinox',
-      rating: 4.8,
-      subcategory: 'Çakı'
-    },
-    {
-      id: '12',
-      name: 'Leatherman Alet',
-      price: 1499.99,
-      imageUrl: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=500',
-      brand: 'Leatherman',
-      rating: 4.7,
-      subcategory: 'Alet'
-    }
-  ],
-  'dagcilik': [
-    {
-      id: '13',
-      name: 'Petzl Kask',
-      price: 799.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Petzl',
-      rating: 4.6,
-      subcategory: 'Kask'
-    },
-    {
-      id: '14',
-      name: 'Black Diamond Emniyet Kemeri',
-      price: 1299.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Black Diamond',
-      rating: 4.5,
-      subcategory: 'Emniyet Kemeri'
-    }
-  ],
-  'yoga': [
-    {
-      id: '15',
-      name: 'Manduka Yoga Mat',
-      price: 599.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Manduka',
-      rating: 4.8,
-      subcategory: 'Mat'
-    },
-    {
-      id: '16',
-      name: 'Liforme Yoga Blok',
-      price: 199.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Liforme',
-      rating: 4.4,
-      subcategory: 'Blok'
-    }
-  ],
-  'termoslar': [
-    {
-      id: '17',
-      name: 'Stanley Termos 1L',
-      price: 799.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Stanley',
-      rating: 4.7,
-      subcategory: 'Stanley'
-    },
-    {
-      id: '18',
-      name: 'Hydro Flask 750ml',
-      price: 899.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Hydro Flask',
-      rating: 4.6,
-      subcategory: 'Hydro Flask'
-    }
-  ]
-};
-
 const CategoryPage = () => {
   const { categoryId } = useParams();
   const [searchParams] = useSearchParams();
   const subcategory = searchParams.get('subcategory');
   const searchQuery = searchParams.get('q');
-  
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('popular');
@@ -210,11 +30,11 @@ const CategoryPage = () => {
 
   // Reset filters when category, subcategory, or search query changes
   useEffect(() => {
-    setPriceRange({ min: '', max: '' });
+    setPriceRange({ min: '', max: '', });
     setSelectedBrands([]);
     setSortBy('popular');
     setAppliedFilters({
-      priceRange: { min: '', max: '' },
+      priceRange: { min: '', max: '', },
       brands: [],
       sortBy: 'popular'
     });
@@ -275,7 +95,7 @@ const CategoryPage = () => {
   const hasProducts = filteredAndSortedProducts.length > 0;
   const availableBrands = [
     ...new Set(productsToDisplay.map((p) => p.brand))
-];
+  ];
 
   const handleApplyFilters = () => {
     setAppliedFilters({
@@ -304,7 +124,7 @@ const CategoryPage = () => {
                 <GiSettingsKnobs className="text-xl" />
                 <h2 className="text-lg font-bold">Filtreler</h2>
               </div>
-              
+
               {/* Price Range */}
               <div className="mb-6">
                 <h3 className="font-semibold mb-2">Fiyat Aralığı</h3>
@@ -396,9 +216,10 @@ const CategoryPage = () => {
           {hasProducts ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredAndSortedProducts.map((product) => (
-                <div
+                <Link
                   key={product.id}
-                  className="bg-white rounded-lg shadow overflow-hidden"
+                  to={`/products/${product.id}`}
+                  className="block bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow"
                 >
                   <div className="aspect-w-1 aspect-h-1">
                     <img
@@ -425,7 +246,7 @@ const CategoryPage = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (

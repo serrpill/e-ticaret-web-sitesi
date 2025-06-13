@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { api } from '../../services/api'; // axios instance'ı doğru şekilde import edildi
 
 interface SignupFormProps {
   onBack?: () => void;
+  onSignupSuccess?: () => void;
 }
 
-const SignupForm = ({ onBack }: SignupFormProps) => {
+const SignupForm = ({ onBack, onSignupSuccess }: SignupFormProps) => {
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -26,10 +28,29 @@ const SignupForm = ({ onBack }: SignupFormProps) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => { // Async hale getirildi
     e.preventDefault();
-    // Burada backend'e gönderme işlemi yapılabilir
-    alert('Kayıt başarılı!');
+    try {
+      const payload = {
+        email: form.email,
+        password: form.password,
+        name: `${form.firstName} ${form.lastName}`.trim(), // Ad ve soyadı birleştirildi
+      };
+
+      const response = await api.post('/users/register', payload); // API çağrısı yapıldı
+
+      if (response.status === 201) {
+        alert('Kayıt başarılı!');
+        if (onSignupSuccess) {
+          onSignupSuccess();
+        }
+      } else {
+        alert(`Kayıt işlemi tamamlandı ancak beklenmedik bir durum oluştu: ${response.status}`);
+      }
+    } catch (error: any) {
+      console.error('Kayıt hatası:', error);
+      alert(`Kayıt sırasında bir hata oluştu: ${error.response?.data?.message || error.message}`);
+    }
   };
 
   return (
