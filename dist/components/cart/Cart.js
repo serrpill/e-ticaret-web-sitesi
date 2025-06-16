@@ -1,8 +1,0 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useAtom } from 'jotai';
-import { cartAtom } from '../../store';
-import i18next from 'i18next';
-export const Cart = () => {
-    const [cart] = useAtom(cartAtom);
-    return (_jsxs("div", { className: "max-w-2xl mx-auto bg-white dark:bg-gray-800 p-8 rounded shadow-md", children: [_jsx("h1", { className: "text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100", children: i18next.t('cart.title') }), cart.items.length === 0 ? (_jsx("p", { className: "text-gray-600 dark:text-gray-300", children: i18next.t('cart.empty') })) : (_jsxs("div", { children: [_jsx("ul", { className: "divide-y divide-gray-200 dark:divide-gray-700 mb-6", children: cart.items.map(item => (_jsxs("li", { className: "py-4 flex items-center", children: [_jsx("img", { src: item.product.imageUrl, alt: item.product.name, className: "w-16 h-16 object-cover rounded mr-4" }), _jsxs("div", { className: "flex-1", children: [_jsx("h2", { className: "text-lg font-semibold text-gray-900 dark:text-gray-100", children: item.product.name }), _jsxs("p", { className: "text-gray-600 dark:text-gray-300", children: [i18next.t('cart.quantity'), ": ", item.quantity] })] }), _jsxs("span", { className: "text-indigo-600 dark:text-indigo-400 font-bold", children: ["$", item.product.price * item.quantity] })] }, item.productId))) }), _jsxs("div", { className: "flex justify-between items-center", children: [_jsx("span", { className: "text-lg font-bold text-gray-900 dark:text-gray-100", children: i18next.t('cart.total') }), _jsxs("span", { className: "text-xl font-bold text-indigo-600 dark:text-indigo-400", children: ["$", cart.total] })] })] }))] }));
-};

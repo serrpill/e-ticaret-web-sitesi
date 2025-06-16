@@ -40,9 +40,9 @@ const CategoryPage = () => {
     });
   }, [categoryId, subcategory, searchQuery]);
 
-  const allProducts = Object.values(mockProducts).flat(); // Get all products from all categories
+  const allProducts: Product[] = Object.values(mockProducts).flat(); // Get all products from all categories
 
-  let productsToDisplay = allProducts;
+  let productsToDisplay: Product[] = allProducts;
 
   if (searchQuery) {
     const lowerCaseQuery = searchQuery.toLowerCase();

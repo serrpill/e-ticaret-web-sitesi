@@ -23,10 +23,6 @@ function App() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const allProducts = Object.values(mockProducts).flat();
 
-  const handleLoginClick = () => {
-    setIsLoginModalOpen(true);
-  };
-
   const handleCloseLoginModal = () => {
     setIsLoginModalOpen(false);
   };
