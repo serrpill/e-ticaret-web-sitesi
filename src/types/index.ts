@@ -16,6 +16,7 @@ export interface Product {
   brand: string;
   rating: number;
   subcategory: string;
+  sportCategories: string[];
 }
 
 export interface Category {

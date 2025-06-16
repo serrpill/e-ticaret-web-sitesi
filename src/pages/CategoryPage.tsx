@@ -3,22 +3,14 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { GiSettingsKnobs } from 'react-icons/gi';
 import { Link } from 'react-router-dom';
 import mockProducts from '../data/allMockProducts';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  imageUrl: string;
-  brand: string;
-  rating: number;
-  subcategory: string;
-}
+import { Product } from '../types'; // Product tipini kullanacağımız için import ediyoruz
 
 const CategoryPage = () => {
-  const { categoryId } = useParams();
+  const { categoryId, sportCategory } = useParams(); // categoryId mainCategory veya sportCategory olabilir
   const [searchParams] = useSearchParams();
   const subcategory = searchParams.get('subcategory');
   const searchQuery = searchParams.get('q');
+
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('popular');
@@ -28,7 +20,7 @@ const CategoryPage = () => {
     sortBy: 'popular'
   });
 
-  // Reset filters when category, subcategory, or search query changes
+  // Reset filters when category, subcategory, search query, or sport category changes
   useEffect(() => {
     setPriceRange({ min: '', max: '', });
     setSelectedBrands([]);
@@ -38,7 +30,7 @@ const CategoryPage = () => {
       brands: [],
       sortBy: 'popular'
     });
-  }, [categoryId, subcategory, searchQuery]);
+  }, [categoryId, subcategory, searchQuery, sportCategory]);
 
   const allProducts: Product[] = Object.values(mockProducts).flat(); // Get all products from all categories
 
@@ -52,8 +44,19 @@ const CategoryPage = () => {
         p.brand.toLowerCase().includes(lowerCaseQuery) ||
         p.subcategory.toLowerCase().includes(lowerCaseQuery)
     );
-  } else if (categoryId && mockProducts[categoryId]) {
-    productsToDisplay = mockProducts[categoryId];
+  } else if (sportCategory) {
+    // Spor kategorisine göre filtreleme
+    productsToDisplay = allProducts.filter(p =>
+      p.sportCategories && p.sportCategories.includes(sportCategory.toLowerCase())
+    );
+  } else if (categoryId) {
+    // Ana kategoriye göre filtreleme
+    productsToDisplay = allProducts.filter(p => {
+      // categoryId eşleşmesi veya sportCategories içinde categoryId varsa
+      return p.categoryId === categoryId || 
+             (p.sportCategories && p.sportCategories.includes(categoryId.toLowerCase()));
+    });
+    
     if (subcategory) {
       productsToDisplay = productsToDisplay.filter(
         (p) => p.subcategory === subcategory
@@ -196,71 +199,72 @@ const CategoryPage = () => {
             <h1 className="text-2xl font-bold">
               {searchQuery
                 ? `Arama Sonuçları: "${searchQuery}"`
+                : sportCategory
+                ? `${sportCategory.charAt(0).toUpperCase() + sportCategory.slice(1)} Ürünleri`
                 : subcategory
                 ? `${categoryId?.replace(/-/g, ' ')} - ${subcategory}`
-                : categoryId?.replace(/-/g, ' ')}
+                : categoryId
+                ? `${categoryId.replace(/-/g, ' ')} Ürünleri`
+                : 'Tüm Ürünler'}
             </h1>
-            {hasProducts && !searchQuery && (
+            <div className="flex items-center gap-2">
+              <label htmlFor="sort-by" className="text-gray-700">Sırala:</label>
               <select
+                id="sort-by"
                 value={sortBy}
                 onChange={(e) => handleSortChange(e.target.value)}
-                className="px-3 py-2 border rounded"
+                className="border rounded px-2 py-1"
               >
-                <option value="popular">Popülerlik</option>
-                <option value="price-asc">Fiyat (Düşükten Yükseğe)</option>
-                <option value="price-desc">Fiyat (Yüksekten Düşüğe)</option>
+                <option value="popular">Popüler</option>
+                <option value="price-asc">Fiyata Göre Artan</option>
+                <option value="price-desc">Fiyata Göre Azalan</option>
               </select>
-            )}
+            </div>
           </div>
 
-          {hasProducts ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredAndSortedProducts.map((product) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {hasProducts ? (
+              filteredAndSortedProducts.map((product) => (
                 <Link
                   key={product.id}
                   to={`/products/${product.id}`}
-                  className="block bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow"
+                  className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
                 >
-                  <div className="aspect-w-1 aspect-h-1">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="w-full h-48 object-cover"
-                    />
-                  </div>
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="w-full h-48 object-cover"
+                  />
                   <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-1">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-2">{product.brand}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold text-yellow-600">
-                        {product.price.toLocaleString('tr-TR', {
-                          style: 'currency',
-                          currency: 'TRY',
-                        })}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="text-sm text-gray-600">{product.rating}</span>
-                      </div>
+                    <h3 className="font-bold text-lg text-gray-900 truncate">{product.name}</h3>
+                    <p className="text-gray-600 text-sm">{product.brand}</p>
+                    <div className="flex items-center mt-2">
+                      {[...Array(5)].map((_, i) => (
+                        <svg
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < Math.floor(product.rating)
+                              ? 'text-yellow-400'
+                              : 'text-gray-300'
+                          }`}
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                      <span className="ml-1 text-sm text-gray-600">({product.rating.toFixed(1)})</span>
                     </div>
+                    <p className="text-xl font-bold text-indigo-600 mt-2">
+                      {product.price.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                    </p>
                   </div>
                 </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-600">
-                {searchQuery ? 'Aradığınız ürün bulunamadı.' : 'Ürün Bulunamadı'}
-              </h2>
-              <p className="text-gray-500 mt-2">
-                {searchQuery
-                  ? 'Lütfen başka bir anahtar kelime ile tekrar deneyin.'
-                  : 'Bu kategoride henüz ürün bulunmamaktadır.'}
-              </p>
-            </div>
-          )}
+              ))
+            ) : (
+              <p className="text-gray-600 col-span-full">Seçilen kategori veya spor için ürün bulunamadı.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

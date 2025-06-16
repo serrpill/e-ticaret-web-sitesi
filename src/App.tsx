@@ -10,18 +10,15 @@ import Footer from './components/layout/Footer';
 import LoginDrawer from './components/layout/LoginDrawer';
 import CategoryPage from './pages/CategoryPage';
 import ProductDetailPage from './pages/ProductDetailPage';
-import { ProductList } from './components/products/ProductList';
 import { useState } from 'react';
 import RegisterPage from './components/auth/SignupForm';
 import { LoginForm } from './components/auth/LoginForm';
-import mockProducts from './data/allMockProducts';
 
 const queryClient = new QueryClient();
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const allProducts = Object.values(mockProducts).flat();
 
   const handleCloseLoginModal = () => {
     setIsLoginModalOpen(false);
@@ -39,11 +36,11 @@ function App() {
                 <>
                   <Banner />
                   <CategoryGrid />
-                  <ProductList products={allProducts} />
                   <InfoCards />
                 </>
               } />
               <Route path="/category/:categoryId" element={<CategoryPage />} />
+              <Route path="/category/sport/:sportCategory" element={<CategoryPage />} />
               <Route path="/category/:categoryId/:subcategory" element={<CategoryPage />} />
               <Route path="/category/search" element={<CategoryPage />} />
               <Route path="/products/:productId" element={<ProductDetailPage />} />

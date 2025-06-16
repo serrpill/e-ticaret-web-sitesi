@@ -1,254 +1,92 @@
 import { useParams } from 'react-router-dom';
 import { HeartIcon, BookmarkIcon } from '@heroicons/react/24/outline';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  imageUrl: string;
-  brand: string;
-  rating: number;
-  subcategory: string;
-}
-
-const mockProducts: Record<string, Product[]> = {
-  'kamp-ekipmanlari': [
-    {
-      id: '1',
-      name: 'Coleman Çadır 4 Kişilik',
-      price: 2499.99,
-      imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=500',
-      brand: 'Coleman',
-      rating: 4.5,
-      subcategory: 'Çadır'
-    },
-    {
-      id: '2',
-      name: 'Quechua Uyku Tulumu',
-      price: 899.99,
-      imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=500',
-      brand: 'Quechua',
-      rating: 4.2,
-      subcategory: 'Uyku Tulumu'
-    },
-    {
-      id: '3',
-      name: 'Naturehike Mat',
-      price: 299.99,
-      imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=500',
-      brand: 'Naturehike',
-      rating: 4.0,
-      subcategory: 'Mat'
-    }
-  ],
-  'outdoor-giyim': [
-    {
-      id: '4',
-      name: 'The North Face Mont',
-      price: 3499.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'The North Face',
-      rating: 4.8,
-      subcategory: 'Mont'
-    },
-    {
-      id: '5',
-      name: 'Columbia Polar',
-      price: 1299.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Columbia',
-      rating: 4.3,
-      subcategory: 'Polar'
-    }
-  ],
-  'ayakkabi-bot': [
-    {
-      id: '6',
-      name: 'Salomon Trekking Botu',
-      price: 1899.99,
-      imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
-      brand: 'Salomon',
-      rating: 4.7,
-      subcategory: 'Trekking Botu'
-    },
-    {
-      id: '7',
-      name: 'Merrell Sandalet',
-      price: 799.99,
-      imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
-      brand: 'Merrell',
-      rating: 4.4,
-      subcategory: 'Sandalet'
-    },
-    {
-      id: '8',
-      name: 'La Sportiva Kışlık Bot',
-      price: 2799.99,
-      imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
-      brand: 'La Sportiva',
-      rating: 4.6,
-      subcategory: 'Kışlık Botlar'
-    }
-  ],
-  'outdoor-canta': [
-    {
-      id: '9',
-      name: 'Osprey Sırt Çantası 65L',
-      price: 3499.99,
-      imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
-      brand: 'Osprey',
-      rating: 4.9,
-      subcategory: 'Sırt Çantası'
-    },
-    {
-      id: '10',
-      name: 'Deuter Bel Çantası',
-      price: 599.99,
-      imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
-      brand: 'Deuter',
-      rating: 4.3,
-      subcategory: 'Bel Çantası'
-    }
-  ],
-  'caki-bicak': [
-    {
-      id: '11',
-      name: 'Victorinox Çakı',
-      price: 899.99,
-      imageUrl: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=500',
-      brand: 'Victorinox',
-      rating: 4.8,
-      subcategory: 'Çakı'
-    },
-    {
-      id: '12',
-      name: 'Leatherman Alet',
-      price: 1499.99,
-      imageUrl: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=500',
-      brand: 'Leatherman',
-      rating: 4.7,
-      subcategory: 'Alet'
-    }
-  ],
-  'dagcilik': [
-    {
-      id: '13',
-      name: 'Petzl Kask',
-      price: 799.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Petzl',
-      rating: 4.6,
-      subcategory: 'Kask'
-    },
-    {
-      id: '14',
-      name: 'Black Diamond Emniyet Kemeri',
-      price: 1299.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Black Diamond',
-      rating: 4.5,
-      subcategory: 'Emniyet Kemeri'
-    }
-  ],
-  'yoga': [
-    {
-      id: '15',
-      name: 'Manduka Yoga Mat',
-      price: 599.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Manduka',
-      rating: 4.8,
-      subcategory: 'Mat'
-    },
-    {
-      id: '16',
-      name: 'Liforme Yoga Blok',
-      price: 199.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Liforme',
-      rating: 4.4,
-      subcategory: 'Blok'
-    }
-  ],
-  'termoslar': [
-    {
-      id: '17',
-      name: 'Stanley Termos 1L',
-      price: 799.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Stanley',
-      rating: 4.7,
-      subcategory: 'Stanley'
-    },
-    {
-      id: '18',
-      name: 'Hydro Flask 750ml',
-      price: 899.99,
-      imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
-      brand: 'Hydro Flask',
-      rating: 4.6,
-      subcategory: 'Hydro Flask'
-    }
-  ]
-};
+import mockProducts from '../data/allMockProducts';
 
 const ProductDetailPage = () => {
-  const { productId } = useParams<{ productId: string }>();
+  const { productId } = useParams();
   const allProducts = Object.values(mockProducts).flat();
   const product = allProducts.find(p => p.id === productId);
 
   if (!product) {
-    return <div className="container mx-auto p-4 text-center text-red-600">Ürün bulunamadı.</div>;
+    return <div>Ürün bulunamadı</div>;
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">{product.name}</h1>
+    <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <img src={product.imageUrl} alt={product.name} className="w-full h-96 object-contain rounded mb-4 bg-gray-100" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold mb-2">{product.name}</h2>
-          <p className="text-gray-700 mb-4">{product.brand}</p>
-          <h3 className="text-xl font-semibold mb-2">Ürün Detayları</h3>
-          <ul className="list-disc list-inside mb-6">
-            <li>Fiyat: {product.price.toLocaleString('tr-TR', {
-              style: 'currency',
-              currency: 'TRY',
-            })}</li>
-            <li>Marka: {product.brand}</li>
-            <li>Alt Kategori: {product.subcategory}</li>
-            <li>Değerlendirme: {product.rating} ★</li>
-          </ul>
-          <div className="flex items-center gap-4 mb-8">
-            <button className="bg-yellow-500 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-yellow-600 transition">
-              Sepete Ekle
+        {/* Ürün Görseli */}
+        <div className="relative">
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="w-full h-[500px] object-cover rounded-lg"
+          />
+          <div className="absolute top-4 right-4 flex gap-2">
+            <button className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
+              <HeartIcon className="w-6 h-6 text-gray-600" />
             </button>
-            <button className="text-gray-500 hover:text-red-500 transition">
-              <HeartIcon className="h-8 w-8" />
-            </button>
-            <button className="text-gray-500 hover:text-yellow-500 transition">
-              <BookmarkIcon className="h-8 w-8" />
+            <button className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
+              <BookmarkIcon className="w-6 h-6 text-gray-600" />
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">Genel Değerlendirme ve Kullanıcı Yorumları</h2>
-        <div className="bg-white p-6 rounded shadow-md mb-6">
-          <p className="text-gray-700">Henüz yorum yapılmamış.</p>
-        </div>
-      </div>
+        {/* Ürün Bilgileri */}
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+            <p className="text-lg text-gray-600 mt-2">{product.brand}</p>
+          </div>
 
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">Benzer Ürünler</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gray-200 h-48 flex items-center justify-center text-gray-500">Benzer Ürün 1</div>
-          <div className="bg-gray-200 h-48 flex items-center justify-center text-gray-500">Benzer Ürün 2</div>
-          <div className="bg-gray-200 h-48 flex items-center justify-center text-gray-500">Benzer Ürün 3</div>
-          <div className="bg-gray-200 h-48 flex items-center justify-center text-gray-500">Benzer Ürün 4</div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <svg
+                  key={i}
+                  className={`w-5 h-5 ${
+                    i < Math.floor(product.rating)
+                      ? 'text-yellow-400'
+                      : 'text-gray-300'
+                  }`}
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+            <span className="text-gray-600">({product.rating})</span>
+          </div>
+
+          <div className="text-3xl font-bold text-gray-900">
+            {product.price.toLocaleString('tr-TR', {
+              style: 'currency',
+              currency: 'TRY'
+            })}
+          </div>
+
+          <p className="text-gray-600">{product.description}</p>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">Stok Durumu:</span>
+              <span className={product.stock > 0 ? 'text-green-600' : 'text-red-600'}>
+                {product.stock > 0 ? `${product.stock} adet` : 'Stokta yok'}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">Kategori:</span>
+              <span className="text-gray-600">{product.subcategory}</span>
+            </div>
+          </div>
+
+          <button
+            className="w-full bg-yellow-500 text-white py-3 rounded-lg font-bold hover:bg-yellow-600 transition"
+            disabled={product.stock === 0}
+          >
+            {product.stock > 0 ? 'Sepete Ekle' : 'Stokta Yok'}
+          </button>
         </div>
       </div>
     </div>
