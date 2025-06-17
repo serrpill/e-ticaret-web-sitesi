@@ -4,7 +4,7 @@ import { HeartIcon, BookmarkIcon } from '@heroicons/react/24/outline';
 import { GiShoppingCart } from 'react-icons/gi';
 import mockProducts from '../data/allMockProducts';
 import { Product } from '../types';
-import { cartApi } from '../api/cart';
+import { useCart } from '../context/CartContext';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
@@ -13,7 +13,7 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [addingToCart, setAddingToCart] = useState(false);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const allProducts = Object.values(mockProducts).flat();
@@ -29,22 +29,17 @@ const ProductDetailPage = () => {
     setLoading(false);
   }, [productId]);
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!product) return;
     
-    try {
-      setAddingToCart(true);
-      const response = await cartApi.addToCart(product, quantity);
-      if (response.success) {
-        navigate('/cart');
-      } else {
-        setError(response.error || 'Ürün sepete eklenemedi');
-      }
-    } catch (err) {
-      setError('Bir hata oluştu');
-    } finally {
-      setAddingToCart(false);
-    }
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.imageUrl
+    });
+    
+    navigate('/cart');
   };
 
   if (loading) {
@@ -151,11 +146,10 @@ const ProductDetailPage = () => {
             </div>
             <button
               onClick={handleAddToCart}
-              disabled={addingToCart}
               className="flex-1 bg-yellow-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-yellow-600 transition flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <GiShoppingCart className="text-xl" />
-              {addingToCart ? 'Ekleniyor...' : 'Sepete Ekle'}
+              Sepete Ekle
             </button>
           </div>
 

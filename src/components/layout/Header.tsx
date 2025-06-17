@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate, createSearchParams } from 'react-router-dom';
-import { FiSearch } from 'react-icons/fi';
+import { FiSearch, FiShoppingCart } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import { Menu, Transition } from '@headlessui/react';
 import { UserCircleIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
 
@@ -17,6 +18,7 @@ const Header = ({ onLoginClick }: HeaderProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { totalItems } = useCart();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSearchTerm = e.target.value;
@@ -119,7 +121,14 @@ const Header = ({ onLoginClick }: HeaderProps) => {
           ) : (
             <button className="px-3 py-2 bg-gray-200 rounded" onClick={onLoginClick}>üyelik/giriş</button>
           )}
-          <button className="px-3 py-2 bg-gray-200 rounded">sepet</button>
+          <Link to="/cart" className="relative px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">
+            <FiShoppingCart size={24} />
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </Link>
         </div>
       </div>
     </header>

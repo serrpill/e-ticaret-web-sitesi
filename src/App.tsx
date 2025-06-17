@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import Header from './components/layout/Header';
 import CategoryMenu from './components/layout/CategoryMenu';
 import Banner from './components/layout/Banner';
@@ -28,31 +29,33 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <div className="min-h-screen bg-gray-50 flex flex-col items-center gap-6">
-            <Header onLoginClick={() => setDrawerOpen(true)} />
-            <CategoryMenu />
-            <Routes>
-              <Route path="/" element={
-                <>
-                  <Banner />
-                  <CategoryGrid />
-                  <InfoCards />
-                </>
-              } />
-              <Route path="/category/:categoryId" element={<CategoryPage />} />
-              <Route path="/category/sport/:sportCategory" element={<CategoryPage />} />
-              <Route path="/category/:categoryId/:subcategory" element={<CategoryPage />} />
-              <Route path="/category/search" element={<CategoryPage />} />
-              <Route path="/products/:productId" element={<ProductDetailPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/login" element={<LoginForm onClose={handleCloseLoginModal} />} />
-              <Route path="/cart" element={<CartPage />} />
-            </Routes>
-            <Footer />
-            <LoginDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-          </div>
-        </BrowserRouter>
+        <CartProvider>
+          <BrowserRouter>
+            <div className="min-h-screen bg-gray-50 flex flex-col items-center gap-6">
+              <Header onLoginClick={() => setDrawerOpen(true)} />
+              <CategoryMenu />
+              <Routes>
+                <Route path="/" element={
+                  <>
+                    <Banner />
+                    <CategoryGrid />
+                    <InfoCards />
+                  </>
+                } />
+                <Route path="/category/:categoryId" element={<CategoryPage />} />
+                <Route path="/category/sport/:sportCategory" element={<CategoryPage />} />
+                <Route path="/category/:categoryId/:subcategory" element={<CategoryPage />} />
+                <Route path="/category/search" element={<CategoryPage />} />
+                <Route path="/products/:productId" element={<ProductDetailPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<LoginForm onClose={handleCloseLoginModal} />} />
+                <Route path="/cart" element={<CartPage />} />
+              </Routes>
+              <Footer />
+              <LoginDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+            </div>
+          </BrowserRouter>
+        </CartProvider>
         {isLoginModalOpen && <LoginForm onClose={handleCloseLoginModal} />}
       </AuthProvider>
     </QueryClientProvider>

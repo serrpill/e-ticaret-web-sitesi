@@ -1,164 +1,86 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { GiShoppingCart } from 'react-icons/gi';
-import { cartApi } from '../api/cart';
-import { Cart, CartItem } from '../models/Cart';
+import { useCart } from '../context/CartContext';
 
-const CartPage = () => {
-  const [cart, setCart] = useState<Cart | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default function CartPage() {
+  const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
 
-  useEffect(() => {
-    loadCart();
-  }, []);
-
-  const loadCart = async () => {
-    try {
-      setLoading(true);
-      const response = await cartApi.getCart();
-      if (response.success && response.data) {
-        setCart(response.data);
-      } else {
-        setError(response.error || 'Sepet yüklenemedi');
-      }
-    } catch (err) {
-      setError('Bir hata oluştu');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuantityChange = async (item: CartItem, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    
-    try {
-      const response = await cartApi.updateCartItem(item.productId, newQuantity);
-      if (response.success && response.data) {
-        setCart(response.data);
-      }
-    } catch (err) {
-      setError('Miktar güncellenemedi');
-    }
-  };
-
-  const handleRemoveItem = async (productId: string) => {
-    try {
-      const response = await cartApi.removeFromCart(productId);
-      if (response.success && response.data) {
-        setCart(response.data);
-      }
-    } catch (err) {
-      setError('Ürün sepetten çıkarılamadı');
-    }
-  };
-
-  if (loading) {
+  if (items.length === 0) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center text-red-500">{error}</div>
-      </div>
-    );
-  }
-
-  if (!cart || cart.items.length === 0) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center">
-          <GiShoppingCart className="mx-auto text-6xl text-gray-400 mb-4" />
-          <h2 className="text-2xl font-bold mb-4">Sepetiniz Boş</h2>
-          <p className="text-gray-600 mb-8">Sepetinizde henüz ürün bulunmuyor.</p>
-          <Link
-            to="/"
-            className="inline-block bg-yellow-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-yellow-600 transition"
-          >
-            Alışverişe Başla
-          </Link>
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-4">Sepetim</h1>
+        <p className="text-gray-600">Sepetinizde ürün bulunmamaktadır.</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-8">Sepetim</h1>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          {cart.items.map((item) => (
-            <div key={item.productId} className="flex items-center gap-4 mb-6 p-4 bg-white rounded-lg shadow">
-              <img
-                src={item.product.imageUrl}
-                alt={item.product.name}
-                className="w-24 h-24 object-cover rounded"
-              />
-              <div className="flex-1">
-                <h3 className="font-bold">{item.product.name}</h3>
-                <p className="text-gray-600">{item.product.brand}</p>
-                <p className="text-yellow-500 font-bold mt-2">
-                  {item.product.price.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
-                </p>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">Sepetim</h1>
+      <div className="grid grid-cols-1 gap-6">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className="flex items-center justify-between p-4 bg-white rounded-lg shadow"
+          >
+            <div className="flex items-center space-x-4">
+              {item.image && (
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-20 h-20 object-cover rounded"
+                />
+              )}
+              <div>
+                <h3 className="font-medium">{item.name}</h3>
+                <p className="text-gray-600">{item.price.toFixed(2)} TL</p>
               </div>
-              <div className="flex items-center gap-2">
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => handleQuantityChange(item, item.quantity - 1)}
-                  className="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100"
+                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                  className="px-2 py-1 border rounded hover:bg-gray-100"
                 >
                   -
                 </button>
                 <span className="w-8 text-center">{item.quantity}</span>
                 <button
-                  onClick={() => handleQuantityChange(item, item.quantity + 1)}
-                  className="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100"
+                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                  className="px-2 py-1 border rounded hover:bg-gray-100"
                 >
                   +
                 </button>
               </div>
               <button
-                onClick={() => handleRemoveItem(item.productId)}
-                className="text-red-500 hover:text-red-700"
+                onClick={() => removeFromCart(item.id)}
+                className="text-red-600 hover:text-red-800"
               >
-                Kaldır
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
               </button>
             </div>
-          ))}
-        </div>
-
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4">Sipariş Özeti</h2>
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between">
-                <span>Ara Toplam</span>
-                <span>{cart.total.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Kargo</span>
-                <span>Ücretsiz</span>
-              </div>
-              <div className="border-t pt-2 mt-2">
-                <div className="flex justify-between font-bold">
-                  <span>Toplam</span>
-                  <span>{cart.total.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</span>
-                </div>
-              </div>
-            </div>
-            <button className="w-full bg-yellow-500 text-white py-3 rounded-lg font-bold hover:bg-yellow-600 transition">
-              Ödemeye Geç
-            </button>
           </div>
+        ))}
+      </div>
+      <div className="mt-8 p-4 bg-white rounded-lg shadow">
+        <div className="flex justify-between items-center">
+          <span className="text-lg font-medium">Toplam:</span>
+          <span className="text-xl font-bold">{totalPrice.toFixed(2)} TL</span>
         </div>
+        <button className="w-full mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Siparişi Tamamla
+        </button>
       </div>
     </div>
   );
-};
-
-export default CartPage; 
+} 
