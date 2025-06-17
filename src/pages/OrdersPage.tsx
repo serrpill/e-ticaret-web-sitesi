@@ -1,7 +1,45 @@
 import { useOrders } from '../context/OrderContext';
+import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 export default function OrdersPage() {
-  const { orders } = useOrders();
+  const { orders, loading, error } = useOrders();
+  const { user } = useAuth();
+
+  if (!user) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-4">Siparişlerim</h1>
+        <p className="text-gray-600 mb-4">Siparişlerinizi görüntülemek için giriş yapmalısınız.</p>
+        <Link
+          to="/login"
+          className="inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700"
+        >
+          Giriş Yap
+        </Link>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-4">Siparişlerim</h1>
+        <div className="flex justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-4">Siparişlerim</h1>
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
 
   if (orders.length === 0) {
     return (
@@ -18,12 +56,12 @@ export default function OrdersPage() {
       <div className="space-y-6">
         {orders.map((order) => (
           <div
-            key={order.id}
+            key={order._id}
             className="bg-white rounded-lg shadow p-6"
           >
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="font-medium">Sipariş No: {order.id}</h3>
+                <h3 className="font-medium">Sipariş No: {order._id}</h3>
                 <p className="text-sm text-gray-600">
                   {new Date(order.date).toLocaleDateString('tr-TR', {
                     year: 'numeric',

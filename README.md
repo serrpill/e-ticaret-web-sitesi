@@ -1,102 +1,142 @@
-# E-Commerce Project
+# BlackFeather Kamp Malzemeleri E-Ticaret Projesi
+# GİTHUB LİNKİ : https://github.com/serrpill/e-ticaret-web-sitesi
 
-A modern e-commerce web application built with React, TypeScript, and Tailwind CSS.
+###HAZIRLAYANLAR:
 
-## Features
+# ERDEM YORULMAZ - 170422042
+# SERPİL ÇOBANLAR - 170422055
 
-- User authentication (register/login) with JWT
-- Product listing with category filtering
-- Shopping cart management
-- Infinite scroll product loading
-- Responsive design
-- Modern UI components
+Modern ve kullanıcı dostu bir e-ticaret platformu. Kamp malzemeleri satışı yapan, React ve Node.js teknolojileri ile geliştirilmiş tam kapsamlı bir web uygulaması.
 
-## Tech Stack
 
-- React 18
+
+## Özellikler
+
+### Kullanıcı Yönetimi
+- Kullanıcı kaydı ve girişi
+- Profil yönetimi
+- Oturum kontrolü
+- Güvenli kimlik doğrulama
+
+### Ürün Yönetimi
+- Kategorilere göre ürün listeleme
+- Detaylı ürün sayfaları
+- Gelişmiş ürün arama
+- Stok takibi
+- Ürün filtreleme ve sıralama
+
+### Sepet İşlemleri
+- Sepete ürün ekleme/çıkarma
+- Ürün miktarı güncelleme
+- Sepet toplamı hesaplama
+- Sepet içeriği görüntüleme
+- Sepet durumunu saklama
+
+### Sipariş Yönetimi
+- Sipariş oluşturma
+- Sipariş durumu takibi
+- Sipariş detayları
+
+### Arayüz Özellikleri
+- Responsive tasarım
+- Modern ve kullanıcı dostu arayüz
+- Kategori menüsü
+- Arama çubuğu
+- Banner alanı
+- Bilgi kartları
+- Footer
+
+### Güvenlik
+- JWT token kullanımı
+- API route koruması
+- Güvenli veri saklama
+- Hata yönetimi
+
+## Teknolojiler
+
+### Frontend
+- React
 - TypeScript
-- Tailwind CSS
+- TailwindCSS
 - React Router
-- Jotai (State Management)
+- Context API
 - Axios
-- React Query
-- React Intersection Observer
 
-## Getting Started
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT Authentication
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+## Kurulum
 
-## Project Structure
-
-```
-src/
-  ├── components/
-  │   ├── auth/
-  │   │   └── LoginForm.tsx
-  │   ├── products/
-  │   │   └── ProductList.tsx
-  │   └── cart/
-  │       └── Cart.tsx
-  ├── services/
-  │   └── api.ts
-  ├── store/
-  │   └── index.ts
-  ├── types/
-  │   └── index.ts
-  ├── App.tsx
-  └── main.tsx
+1. Projeyi klonlayın:
+```bash
+git clone https://github.com/serrpill/e-ticaret-web-sitesi.git
 ```
 
-## API Endpoints
+2. Frontend bağımlılıklarını yükleyin:
+```bash
+cd e-ticaret-web-sitesi
+npm install
+```
 
-The project includes the following API endpoints:
+3. Backend bağımlılıklarını yükleyin:
+```bash
+cd server
+npm install
+```
 
-### Authentication
-- POST /api/auth/login
-- POST /api/auth/register
+4. MongoDB'yi başlatın:
+```bash
+mongod
+```
 
-### Products
-- GET /api/products
-- GET /api/products/:id
+5. Backend sunucusunu başlatın:
+```bash
+cd server
+npm start
+```
 
-### Categories
-- GET /api/categories
+6. Frontend geliştirme sunucusunu başlatın:
+```bash
+npm run dev
+```
 
-### Cart
-- GET /api/cart
-- POST /api/cart/items
-- PATCH /api/cart/items/:id
-- DELETE /api/cart/items/:id
-- POST /api/cart/merge
+## Kullanım
 
-## Development
+1. Tarayıcınızda `http://localhost:5173` adresine gidin
+2. Kayıt olun veya giriş yapın
+3. Ürünleri keşfedin ve sepete ekleyin
+4. Siparişinizi tamamlayın
+5. Alışverişe devam edin
 
-The project uses Vite for development and building. Available scripts:
+## Proje Yapısı
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+```
+e-ticaret-web-sitesi/
+├── src/
+│   ├── components/
+│   ├── context/
+│   ├── pages/
+│   ├── services/
+│   └── types/
+├── server/
+│   ├── models/
+│   ├── routes/
+│   └── middleware/
+└── public/
+```
 
-## Security
+## Katkıda Bulunma
 
-- JWT-based authentication
-- Password hashing with bcrypt
-- Token-based session management
-- DDoS protection measures
+1. Bu depoyu fork edin
+2. Yeni bir branch oluşturun (`git checkout -b feature/yeniOzellik`)
+3. Değişikliklerinizi commit edin (`git commit -am 'Yeni özellik eklendi'`)
+4. Branch'inizi push edin (`git push origin feature/yeniOzellik`)
+5. Pull Request oluşturun
 
-## Contributing
+## Lisans
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request 
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
