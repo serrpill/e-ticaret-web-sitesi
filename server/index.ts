@@ -25,7 +25,7 @@ app.post('/api/users/register', async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ success: false, message: 'Bu e-posta zaten kullanımda.' });
     }
 
     // Hash password
@@ -47,17 +47,20 @@ app.post('/api/users/register', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    res.status(201).json({
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
+    return res.status(201).json({
+      success: true,
+      data: {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
       },
     });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ success: false, message: 'Sunucu hatası' });
   }
 });
 
@@ -72,14 +75,14 @@ app.post('/api/users/login', async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ success: false, message: 'Geçersiz kimlik bilgileri' });
     }
 
     // Check password
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ success: false, message: 'Geçersiz kimlik bilgileri' });
     }
 
     // Generate JWT
@@ -89,17 +92,20 @@ app.post('/api/users/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    res.json({
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
+    return res.json({
+      success: true,
+      data: {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
       },
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ success: false, message: 'Sunucu hatası' });
   }
 });
 

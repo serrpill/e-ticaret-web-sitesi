@@ -13,6 +13,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import { useState } from 'react';
 import RegisterPage from './components/auth/SignupForm';
 import { LoginForm } from './components/auth/LoginForm';
+import CartPage from './pages/CartPage';
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ function App() {
               <Route path="/products/:productId" element={<ProductDetailPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/login" element={<LoginForm onClose={handleCloseLoginModal} />} />
+              <Route path="/cart" element={<CartPage />} />
             </Routes>
             <Footer />
             <LoginDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />

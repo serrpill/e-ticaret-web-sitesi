@@ -32,13 +32,16 @@ export interface CartItem {
 }
 
 export interface Cart {
+  userId: string;
   items: CartItem[];
   total: number;
+  updatedAt: Date;
 }
 
-export interface AuthResponse {
-  token: string;
-  user: User;
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data?: T;
 }
 
 export interface LoginCredentials {
@@ -46,6 +49,8 @@ export interface LoginCredentials {
   password: string;
 }
 
-export interface RegisterCredentials extends LoginCredentials {
+export interface RegisterCredentials {
+  email: string;
+  password: string;
   name: string;
 } 

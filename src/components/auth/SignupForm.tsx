@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { api } from '../../services/api'; // axios instance'ı doğru şekilde import edildi
+import { useNavigate } from 'react-router-dom';
+import { auth } from '../../services/api';
+import { RegisterCredentials } from '../../types';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 
 interface SignupFormProps {
   onBack?: () => void;
@@ -7,114 +10,144 @@ interface SignupFormProps {
 }
 
 const SignupForm = ({ onBack, onSignupSuccess }: SignupFormProps) => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     password: '',
-    gender: '',
-    phone: '',
-    birth: '',
-    acceptContract: false,
-    acceptPrivacy: false,
-    acceptCommercial: false,
+    confirmPassword: '',
   });
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setForm(f => ({
-      ...f,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => { // Async hale getirildi
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
+    if (form.password !== form.confirmPassword) {
+      setError('Şifreler eşleşmiyor');
+      return;
+    }
+
     try {
-      const payload = {
+      const payload: RegisterCredentials = {
         email: form.email,
         password: form.password,
-        name: `${form.firstName} ${form.lastName}`.trim(), // Ad ve soyadı birleştirildi
+        name: form.name,
       };
 
-      const response = await api.post('/users/register', payload); // API çağrısı yapıldı
+      const apiResponse = await auth.register(payload);
+      const { success, message, data } = apiResponse.data;
 
-      if (response.status === 201) {
-        alert('Kayıt başarılı!');
+      if (success && data) {
         if (onSignupSuccess) {
           onSignupSuccess();
         }
+        navigate('/login');
       } else {
-        alert(`Kayıt işlemi tamamlandı ancak beklenmedik bir durum oluştu: ${response.status}`);
+        setError(message || 'Kayıt işlemi başarısız oldu');
       }
     } catch (error: any) {
-      console.error('Kayıt hatası:', error);
-      alert(`Kayıt sırasında bir hata oluştu: ${error.response?.data?.message || error.message}`);
+      setError(error.response?.data?.message || 'Kayıt işlemi başarısız oldu');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-8 rounded shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-gray-900 text-center">Yeni Üyelik</h2>
-      <div className="mb-4">
-        <label className="block mb-1">Adı</label>
-        <input name="firstName" value={form.firstName} onChange={handleChange} required className="w-full border rounded px-3 py-2" />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1">Soyadı</label>
-        <input name="lastName" value={form.lastName} onChange={handleChange} required className="w-full border rounded px-3 py-2" />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1">Email</label>
-        <input name="email" type="email" value={form.email} onChange={handleChange} required className="w-full border rounded px-3 py-2" />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1">Şifre</label>
-        <input name="password" type="password" value={form.password} onChange={handleChange} required className="w-full border rounded px-3 py-2" />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1">Cinsiyet</label>
-        <div className="flex gap-4">
-          <label><input type="radio" name="gender" value="Erkek" checked={form.gender === 'Erkek'} onChange={handleChange} /> Erkek</label>
-          <label><input type="radio" name="gender" value="Kadın" checked={form.gender === 'Kadın'} onChange={handleChange} /> Kadın</label>
-          <label><input type="radio" name="gender" value="Belirtmek istemiyorum" checked={form.gender === 'Belirtmek istemiyorum'} onChange={handleChange} /> Belirtmek istemiyorum</label>
-        </div>
-      </div>
-      <div className="mb-4 flex gap-2">
+    <div className="max-w-sm mx-auto bg-white p-8 rounded shadow-md">
+      <h2 className="text-2xl font-bold mb-2 text-gray-900">YENİ ÜYELİK</h2>
+      <div className="mb-4 text-gray-700 font-medium">Hızlı ve güvenli alışverişe başlayın!</div>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block mb-1">Cep Telefonu</label>
-          <input name="phone" value={form.phone} onChange={handleChange} required className="w-full border rounded px-3 py-2" placeholder="(5xx) xxx xx xx" />
+          <input
+            type="text"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-orange-500"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            required
+            placeholder="Adınız Soyadınız"
+          />
         </div>
+        
         <div>
-          <label className="block mb-1">Doğum Tarihi</label>
-          <input name="birth" type="date" value={form.birth} onChange={handleChange} required className="w-full border rounded px-3 py-2" />
+          <input
+            type="email"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-orange-500"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            required
+            placeholder="E-mail adresiniz"
+          />
         </div>
-      </div>
-      <div className="mb-2">
-        <label className="flex items-center gap-2">
-          <input type="checkbox" name="acceptCommercial" checked={form.acceptCommercial} onChange={handleChange} />
-          Aydınlatma Metninde belirtilen ilkeler nezdinde Elektronik Ticaret iletisi almak istiyorum.
-        </label>
-      </div>
-      <div className="mb-2">
-        <label className="flex items-center gap-2">
-          <input type="checkbox" name="acceptContract" checked={form.acceptContract} onChange={handleChange} required />
-          <span>Üyelik sözleşmesini kabul ediyorum.</span>
-        </label>
-      </div>
-      <div className="mb-4">
-        <label className="flex items-center gap-2">
-          <input type="checkbox" name="acceptPrivacy" checked={form.acceptPrivacy} onChange={handleChange} required />
-          <span>Kişisel verilerin işlenmesine ilişkin Aydınlatma Metnini okudum.</span>
-        </label>
-      </div>
-      <div className="flex gap-2 mt-6">
-        {onBack && (
-          <button type="button" onClick={onBack} className="flex-1 py-2 rounded bg-gray-200 hover:bg-gray-300 font-bold">Geri</button>
+        
+        <div className="relative">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-orange-500 pr-10"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            required
+            placeholder="Şifreniz"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+          >
+            {showPassword ? (
+              <EyeSlashIcon className="h-5 w-5" />
+            ) : (
+              <EyeIcon className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+        
+        <div className="relative">
+          <input
+            type={showConfirmPassword ? 'text' : 'password'}
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-orange-500 pr-10"
+            value={form.confirmPassword}
+            onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+            required
+            placeholder="Şifrenizi Tekrar Girin"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+          >
+            {showConfirmPassword ? (
+              <EyeSlashIcon className="h-5 w-5" />
+            ) : (
+              <EyeIcon className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+
+        {error && (
+          <div className="text-red-500 text-sm text-center">{error}</div>
         )}
-        <button type="submit" className="flex-1 py-2 rounded bg-black text-white font-bold hover:bg-gray-800">Kayıt Ol</button>
-      </div>
-    </form>
+
+        <div className="flex gap-4">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-bold hover:bg-gray-300 transition"
+            >
+              Geri
+            </button>
+          )}
+          <button
+            type="submit"
+            className="flex-1 bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700 transition"
+          >
+            Kayıt Ol
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

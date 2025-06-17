@@ -2,20 +2,15 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
-  GiCampingTent,
-  GiBackpack,
-  GiThermometerCold,
-  GiWaterBottle,
-  GiClothes,
-  GiHiking,
+  GiRunningShoe,
+  GiTShirt,
+  GiPillow,
   GiCookingPot,
-  GiClamp,
+  GiBackpack,
+  GiFlashlight,
   GiFirstAidKit,
-  GiKitchenKnives,
-  GiCycle,
-  GiCanoe,
-  GiCompass,
-  GiMountainClimbing
+  GiWaterBottle,
+  GiMountainClimbing,
 } from 'react-icons/gi';
 import mockProducts from '../../data/allMockProducts';
 
@@ -30,19 +25,19 @@ const mainCategories: CategoryMenuItem[] = [
   {
     id: 'outdoor-giyim',
     name: 'Giyim',
-    icon: <GiClothes size={18} />,
+    icon: <GiTShirt size={18} />,
     subcategories: ['Mont', 'Polar', 'Pantolon']
   },
   {
     id: 'ayakkabi-bot',
     name: 'Ayakkabı',
-    icon: <GiHiking size={18} />,
+    icon: <GiRunningShoe size={18} />,
     subcategories: ['Trekking Botu', 'Sandalet', 'Kışlık Botlar', 'Kano Ayakkabısı', 'Pedallı Ayakkabı']
   },
   {
     id: 'uyku',
     name: 'Uyku',
-    icon: <GiCampingTent size={18} />,
+    icon: <GiPillow size={18} />,
     subcategories: ['Çadır', 'Uyku Tulumu', 'Mat']
   },
   {
@@ -60,7 +55,7 @@ const mainCategories: CategoryMenuItem[] = [
   {
     id: 'aydınlatma',
     name: 'Aydınlatma',
-    icon: <GiClamp size={18} />,
+    icon: <GiFlashlight size={18} />,
     subcategories: ['Kafa Lambası', 'El Feneri', 'Bisiklet Işıkları']
   },
   {
@@ -78,7 +73,7 @@ const mainCategories: CategoryMenuItem[] = [
   {
     id: 'spor-ekipmanlari',
     name: 'Spor Ekipmanları',
-    icon: <GiCampingTent size={18} />,
+    icon: <GiMountainClimbing size={18} />,
     subcategories: ['Bisiklet', 'Kano', 'Kürek','Yem Kutusu','Olta Takımı']
   }
 ];

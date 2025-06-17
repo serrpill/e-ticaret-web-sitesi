@@ -1,14 +1,66 @@
-import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { HeartIcon, BookmarkIcon } from '@heroicons/react/24/outline';
+import { GiShoppingCart } from 'react-icons/gi';
 import mockProducts from '../data/allMockProducts';
+import { Product } from '../types';
+import { cartApi } from '../api/cart';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
-  const allProducts = Object.values(mockProducts).flat();
-  const product = allProducts.find(p => p.id === productId);
+  const navigate = useNavigate();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [addingToCart, setAddingToCart] = useState(false);
 
-  if (!product) {
-    return <div>Ürün bulunamadı</div>;
+  useEffect(() => {
+    const allProducts = Object.values(mockProducts).flat();
+    const foundProduct = allProducts.find(p => p.id === productId);
+    
+    if (foundProduct) {
+      setProduct(foundProduct);
+    } else {
+      console.log('Product not found. ID from URL:', productId);
+      console.log('All products:', allProducts);
+      setError('Ürün bulunamadı');
+    }
+    setLoading(false);
+  }, [productId]);
+
+  const handleAddToCart = async () => {
+    if (!product) return;
+    
+    try {
+      setAddingToCart(true);
+      const response = await cartApi.addToCart(product, quantity);
+      if (response.success) {
+        navigate('/cart');
+      } else {
+        setError(response.error || 'Ürün sepete eklenemedi');
+      }
+    } catch (err) {
+      setError('Bir hata oluştu');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="text-center text-red-500">{error || 'Ürün bulunamadı'}</div>
+      </div>
+    );
   }
 
   return (
@@ -81,12 +133,40 @@ const ProductDetailPage = () => {
             </div>
           </div>
 
-          <button
-            className="w-full bg-yellow-500 text-white py-3 rounded-lg font-bold hover:bg-yellow-600 transition"
-            disabled={product.stock === 0}
-          >
-            {product.stock > 0 ? 'Sepete Ekle' : 'Stokta Yok'}
-          </button>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center border rounded">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="w-10 h-10 flex items-center justify-center hover:bg-gray-100"
+              >
+                -
+              </button>
+              <span className="w-12 text-center">{quantity}</span>
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="w-10 h-10 flex items-center justify-center hover:bg-gray-100"
+              >
+                +
+              </button>
+            </div>
+            <button
+              onClick={handleAddToCart}
+              disabled={addingToCart}
+              className="flex-1 bg-yellow-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-yellow-600 transition flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <GiShoppingCart className="text-xl" />
+              {addingToCart ? 'Ekleniyor...' : 'Sepete Ekle'}
+            </button>
+          </div>
+
+          <div className="border-t pt-6">
+            <h3 className="font-bold mb-2">Ürün Detayları</h3>
+            <ul className="space-y-2 text-gray-600">
+              <li>Kategori: {product.categoryId}</li>
+              <li>Alt Kategori: {product.subcategory}</li>
+              <li>Stok Durumu: {product.stock > 0 ? 'Stokta Var' : 'Stokta Yok'}</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

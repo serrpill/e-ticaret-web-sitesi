@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import { auth } from '../services/api';
+import { User } from '../types';
 
 interface AuthContextType {
-  user: { id: string; email: string; name?: string; role: string } | null;
+  user: User | null;
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -18,34 +19,23 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthContextType['user']>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Check for token in localStorage on initial load
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error("Failed to parse user from localStorage", e);
-        logout(); // Clear invalid data
-      }
-    }
-    setIsLoading(false);
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
 
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      const response = await axios.post('/api/users/login', { email, password });
-      const { token: newToken, user: userData } = response.data;
-      setToken(newToken);
-      setUser(userData);
-      localStorage.setItem('token', newToken);
-      localStorage.setItem('user', JSON.stringify(userData));
-    } catch (error) {
+      const response = await auth.login({ email, password });
+      const { success, message, data } = response.data;
+
+      if (success && data) {
+        setUser(data.user);
+        setToken(data.token);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+      } else {
+        throw new Error(message || 'Giriş başarısız oldu');
+      }
+    } catch (error: any) {
       console.error('Login failed:', error);
       throw error;
     } finally {

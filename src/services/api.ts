@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { AuthResponse, LoginCredentials, RegisterCredentials, Product, Category, Cart } from '../types';
+import { LoginCredentials, RegisterCredentials, Product, Category, Cart, User } from '../types';
+
+interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data?: T;
+}
 
 export const api = axios.create({
   baseURL: '/api',
@@ -18,9 +24,9 @@ api.interceptors.request.use((config) => {
 
 export const auth = {
   login: (credentials: LoginCredentials) => 
-    api.post<AuthResponse>('/api/users/login', credentials),
+    api.post<ApiResponse<{ token: string; user: User }>>('/auth/login', credentials),
   register: (credentials: RegisterCredentials) => 
-    api.post<AuthResponse>('/api/users/register', credentials),
+    api.post<ApiResponse<{ user: User }>>('/auth/register', credentials),
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -40,13 +46,12 @@ export const categories = {
 };
 
 export const cart = {
-  get: () => api.get<Cart>('/cart'),
+  get: () => api.get<ApiResponse<Cart>>('/cart'),
   addItem: (productId: string, quantity: number) => 
-    api.post('/cart/items', { productId, quantity }),
+    api.post<ApiResponse<Cart>>('/cart/add', { productId, quantity }),
+  updateItem: (productId: string, quantity: number) => 
+    api.put<ApiResponse<Cart>>('/cart/update', { productId, quantity }),
   removeItem: (productId: string) => 
-    api.delete(`/cart/items/${productId}`),
-  updateQuantity: (productId: string, quantity: number) => 
-    api.patch(`/cart/items/${productId}`, { quantity }),
-  mergeCarts: (localCart: Cart) => 
-    api.post('/cart/merge', localCart),
+    api.delete<ApiResponse<Cart>>(`/cart/remove/${productId}`),
+  clear: () => api.delete<ApiResponse<Cart>>('/cart/clear')
 }; 
