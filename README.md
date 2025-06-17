@@ -1,10 +1,11 @@
 # BlackFeather Kamp Malzemeleri E-Ticaret Projesi
-# GİTHUB LİNKİ : https://github.com/serrpill/e-ticaret-web-sitesi
+GİTHUB LİNKİ : https://github.com/serrpill/e-ticaret-web-sitesi
 
-###HAZIRLAYANLAR:
+### HAZIRLAYANLAR:
 
-# ERDEM YORULMAZ - 170422042
-# SERPİL ÇOBANLAR - 170422055
+ERDEM YORULMAZ - 170422042
+
+SERPİL ÇOBANLAR - 170422055
 
 Modern ve kullanıcı dostu bir e-ticaret platformu. Kamp malzemeleri satışı yapan, React ve Node.js teknolojileri ile geliştirilmiş tam kapsamlı bir web uygulaması.
 
