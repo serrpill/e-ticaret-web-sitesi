@@ -1,7 +1,13 @@
 import { useCart } from '../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
+  const navigate = useNavigate();
+
+  const handleCompleteOrder = () => {
+    navigate('/order-success');
+  };
 
   if (items.length === 0) {
     return (
@@ -77,7 +83,10 @@ export default function CartPage() {
           <span className="text-lg font-medium">Toplam:</span>
           <span className="text-xl font-bold">{totalPrice.toFixed(2)} TL</span>
         </div>
-        <button className="w-full mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <button
+          onClick={handleCompleteOrder}
+          className="w-full mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
           Siparişi Tamamla
         </button>
       </div>
